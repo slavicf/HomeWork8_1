@@ -35,6 +35,5 @@ public class Task1 {
 
         service.shutdown();
 
-
     }
 }
