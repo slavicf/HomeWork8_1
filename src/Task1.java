@@ -29,11 +29,11 @@ public class Task1 {
             return result;
         };
 
-        ExecutorService service = Executors.newFixedThreadPool(2);
-        Future<String> future = service.submit(compute);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        Future<String> future = pool.submit(compute);
         System.out.println(future.get());
 
-        service.shutdown();
+        pool.shutdown();
 
     }
 }
