@@ -1,13 +1,9 @@
+import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Task2 {
 
-    private static int size = 80 * 1000 * 1000;
-    private static double result = 0;
-    private static long a;
     private static int[] array;
-    private static int treads = 4;
-    private static Future<Double>[] futures = new Future[treads];
 
     public static class Compute implements Callable {
         private int start;
@@ -38,26 +34,28 @@ public class Task2 {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        int size = 80000000;
+        double result = 0;
         array = arrCreate(size);
+        int threads = 32;
+        ArrayList<Future<Double>> list = new ArrayList<>();
 
-        ExecutorService pool = Executors.newFixedThreadPool(treads);
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
 
-        int start = 0;
-        int part = 1000 * 1000;
-        int div = size / part / treads;
-        result = 0;
-
-        for (int j = 0; j < div; j++) {
-            for (int i = 0; i < treads; i++) {
-                futures[i] = pool.submit(new Compute(start, part));
-                start += part;
-            }
-            for (int i = 0; i < treads; i++) {
-                result += futures[i].get();
-            }
+        long startTime = System.currentTimeMillis();
+        int part = size / threads;
+        for (int i = 0; i < size; i += part) {
+            @SuppressWarnings("unchecked")
+            Callable<Double> callable = new Compute(i, part);
+            Future<Double> future = pool.submit(callable);
+            list.add(future);
+        }
+        for (Future<Double> future : list) {
+            result += future.get();
         }
 
-        System.out.println("Result is: " + result);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Result is: " + result + ", calculated for: " + ((float) (endTime - startTime) / 1000) + " seconds");
 
         pool.shutdown();
     }
