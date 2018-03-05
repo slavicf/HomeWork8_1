@@ -53,9 +53,10 @@ public class Task2 {
         for (Future<Double> future : list) {
             result += future.get();
         }
-
         long endTime = System.currentTimeMillis();
-        System.out.println("Result is: " + result + ", calculated for: " + ((float) (endTime - startTime) / 1000) + " seconds");
+
+        System.out.println("Result is: " + result);
+        System.out.println( "Calculated in " + ((float) (endTime - startTime) / 1000) + " seconds");
 
         pool.shutdown();
     }
